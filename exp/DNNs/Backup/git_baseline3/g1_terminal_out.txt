@@ -1,0 +1,158 @@
+  SAVE DIRECTORY IS exp\DNNs\git_baseline3\
+name git_baseline3
+DB DB\TAU-urban-acoustic-scenes-2019-development\
+meta_scp meta.csv
+fold_scp evaluation_setup\fold1_train.csv
+wav_dir wave_np\
+gpu_idx [0]
+nb_proc_db 4
+save_dir exp\DNNs\
+optimizer Adam
+lr 0.0001
+opt_mom 0.9
+wd 0.001
+epoch 90
+batch_size 24
+nb_samp 240000
+c_loss_weight 5e-05
+c_loss_lr 0.5
+mixup_start 5
+mixup_alpha 0.1
+dir_label_dic label_dic.pk
+comet_disable 0
+nesterov 0
+amsgrad 1
+make_label_dic 1
+model {'first_conv': 12, 'in_channels': 2, 'filts': [128, [128, 64, 64], [64, 128, 128], [128, 128, 128], 128], 'nb_fc_node': 128, 'nb_classes': 10}
+  0%|                                                                 D:\dcase2019specialistkd-master\g1-train_model_baseline.py:87: UserWarning: This overload of addmm_ is deprecated:?it/s]
+        addmm_(Number beta, Number alpha, Tensor mat1, Tensor mat2)
+Consider using one of the following signatures instead:
+        addmm_(Tensor mat1, Tensor mat2, *, Number beta, Number alpha) (Triggered internally at  C:\b\abs_bao0hdcrdh\croot\pytorch_1675190257512\work\torch\csrc\utils\python_arg_parser.cpp:1174.)
+  distmat.addmm_(1, -2, x, self.centers.t())
+epoch: 0 loss: 1.236: 100%|█████████| 382/382 [14:25<00:00,  2.27s/it]
+epoch0: Extract ValEmbeddings: 100%|█| 218/218 [06:07<00:00,  1.69s/it
+(5215, 128)ract ValEmbeddings: 100%|█| 218/218 [06:07<00:00,  1.30s/it
+epoch0: Extract TrnEmbeddings: 100%|█| 382/382 [05:35<00:00,  1.14it/s
+[0.50965251 0.6916996  0.50784077 0.43684993 0.77058824 0.50828729it/s
+ 0.86899563 0.50308642 0.54074074 0.51483421] 0.5779482262703739
+[0.2960373  0.45903614 0.3012987  0.27041357 0.46628407 0.31878307
+ 0.83920705 0.32065217 0.4745098  0.52836879] 0.41323106423777567
+New best acc: 0.577948
+epoch: 1 loss: 1.046: 100%|█████████| 382/382 [14:23<00:00,  2.26s/it]             | 1/90 [26:49<39:47:25, 1609.50s/it]
+epoch1: Extract ValEmbeddings: 100%|█| 218/218 [06:07<00:00,  1.69s/it
+(5215, 128)ract ValEmbeddings: 100%|█| 218/218 [06:07<00:00,  1.28s/it
+epoch1: Extract TrnEmbeddings: 100%|█| 382/382 [05:34<00:00,  1.14it/s
+[0.54341737 0.78472222 0.61643836 0.45520231 0.8125     0.57414449it/s
+ 0.85330579 0.41777778 0.61538462 0.5204236 ] 0.6109300095877277
+[0.32269939 0.40933192 0.51912568 0.50617284 0.72473118 0.39894552
+ 0.85319149 0.38574939 0.27018634 0.34831461] 0.4598274209012464
+New best acc: 0.610930
+epoch: 2 loss: 1.267: 100%|█████████| 382/382 [14:27<00:00,  2.27s/it]             | 2/90 [53:28<39:11:47, 1603.49s/it]
+epoch2: Extract ValEmbeddings: 100%|█| 218/218 [06:05<00:00,  1.67s/it
+(5215, 128)ract ValEmbeddings: 100%|█| 218/218 [06:04<00:00,  1.29s/it
+epoch2: Extract TrnEmbeddings: 100%|█| 382/382 [05:50<00:00,  1.09it/s
+[0.59801489 0.81755196 0.59236641 0.51351351 0.84917355 0.59357278it/s
+ 0.88034188 0.47954545 0.59519409 0.53238547] 0.6352828379674017
+[0.34047351 0.29968454 0.32786885 0.41684211 0.71367521 0.46031746
+ 0.91725768 0.34482759 0.38026316 0.36407767] 0.4423777564717162
+New best acc: 0.635283
+epoch: 3 loss: 0.777: 100%|█████████| 382/382 [16:25<00:00,  2.58s/it]           | 3/90 [1:20:25<38:54:00, 1609.67s/it]
+epoch3: Extract ValEmbeddings: 100%|█| 218/218 [06:47<00:00,  1.87s/it
+(5215, 128)ract ValEmbeddings: 100%|█| 218/218 [06:46<00:00,  1.63s/it
+epoch3: Extract TrnEmbeddings: 100%|█| 382/382 [06:06<00:00,  1.04it/s
+[0.56166983 0.80434783 0.58842444 0.56767677 0.85102041 0.57019064it/s
+ 0.87603306 0.49673203 0.59059233 0.56356736] 0.6418024928092042
+[0.32497388 0.55591054 0.29207921 0.44963145 0.71341463 0.43228454
+ 0.86491935 0.38541667 0.36940687 0.55421687] 0.4678811121764142
+New best acc: 0.641802
+epoch: 4 loss: 0.789: 100%|█████████| 382/382 [16:25<00:00,  2.58s/it]           | 4/90 [1:50:19<40:11:08, 1682.19s/it]
+epoch4: Extract ValEmbeddings: 100%|█| 218/218 [06:55<00:00,  1.91s/it
+(5215, 128)ract ValEmbeddings: 100%|█| 218/218 [06:55<00:00,  1.41s/it
+epoch4: Extract TrnEmbeddings: 100%|█| 382/382 [06:18<00:00,  1.01it/s
+[0.5776699  0.7804878  0.53426573 0.53747715 0.87110187 0.60617062s/it
+ 0.85862786 0.4665127  0.61749571 0.59038462] 0.639117929050815
+[0.39289805 0.68292683 0.31024931 0.43625498 0.90765172 0.45015106
+ 0.89277389 0.39685658 0.36858006 0.31744312] 0.4763183125599233
+epoch: 5 loss: 0.711: 100%|█████████| 382/382 [16:18<00:00,  2.56s/it]           | 5/90 [2:20:28<40:48:09, 1728.12s/it]
+epoch5: Extract ValEmbeddings: 100%|█| 218/218 [06:55<00:00,  1.91s/it
+(5215, 128)ract ValEmbeddings: 100%|█| 218/218 [06:55<00:00,  1.49s/it
+epoch5: Extract TrnEmbeddings: 100%|█| 382/382 [06:18<00:00,  1.01it/s
+[0.64380531 0.81380753 0.59389313 0.58298755 0.83170254 0.57166667it/s
+ 0.86597938 0.46187364 0.6366843  0.62737643] 0.6598274209012464
+[0.39568345 0.53527981 0.45273632 0.56648936 0.75327511 0.45027125
+ 0.8559499  0.39526412 0.36615385 0.34541063] 0.49300095877277084
+New best acc: 0.659827
+  0%|                                         | 0/382 [00:10<?, ?it/s]           | 6/90 [2:50:28<40:53:34, 1752.55s/it]
+  7%|█████                                                                       | 6/90 [2:50:39<39:49:15, 1706.61s/it]
+Traceback (most recent call last):
+  File "D:\dcase2019specialistkd-master\g1-train_model_baseline.py", line 442, in <module>
+    m_batch, m_label_a, m_label_b, lam = mixup_data(m_batch, m_label,
+  File "D:\dcase2019specialistkd-master\g1-train_model_baseline.py", line 43, in mixup_data
+    index = torch.randperm(batch_size).cuda()
+  File "C:\Users\eeeds\anaconda3\envs\dcase_torch\lib\site-packages\torch\cuda\__init__.py", line 211, in _lazy_init
+    raise AssertionError("Torch not compiled with CUDA enabled")
+AssertionError: Torch not compiled with CUDA enabled
+ Data:
+COMET INFO:     display_summary_level : 1
+COMET INFO:     url                   : https://www.comet.com/jungjee/torch-dcase2019/73c0553e41e243da9dc814d791b517fc
+COMET INFO:   Metrics [count] (min, max):
+COMET INFO:     best_val_acc [5] : (0.5779482262703739, 0.6598274209012464)
+COMET INFO:     loss [230]       : (0.5618103742599487, 2.4805805683135986)
+COMET INFO:     trn_loss [6]     : (0.7111648917198181, 1.2673428058624268)
+COMET INFO:     val_acc_rbf [6]  : (0.5779482262703739, 0.6598274209012464)
+COMET INFO:     val_acc_sig [6]  : (0.41323106423777567, 0.49300095877277084)
+COMET INFO:   Others:
+COMET INFO:     Name : git_baseline3
+COMET INFO:   Parameters:
+COMET INFO:     C                       : 1.0
+COMET INFO:     DB                      : DB\TAU-urban-acoustic-scenes-2019-development\
+COMET INFO:     amsgrad                 : 1
+COMET INFO:     batch_size              : 24
+COMET INFO:     break_ties              : False
+COMET INFO:     c_loss_lr               : 0.5
+COMET INFO:     c_loss_weight           : 5e-05
+COMET INFO:     cache_size              : 200
+COMET INFO:     class_weight            : 1
+COMET INFO:     coef0                   : 0.0
+COMET INFO:     comet_disable           : 0
+COMET INFO:     decision_function_shape : ovr
+COMET INFO:     degree                  : 3
+COMET INFO:     dir_label_dic           : label_dic.pk
+COMET INFO:     epoch                   : 90
+COMET INFO:     filts                   : [128, [64, 64, 64], [128, 128, 128], [128, 128, 128], 128]
+COMET INFO:     first_conv              : 12
+COMET INFO:     fold_scp                : evaluation_setup\fold1_train.csv
+COMET INFO:     gamma                   : scale
+COMET INFO:     gpu_idx                 : [0]
+COMET INFO:     in_channels             : 2
+COMET INFO:     kernel                  : sigmoid
+COMET INFO:     lr                      : 0.0001
+COMET INFO:     make_label_dic          : 1
+COMET INFO:     max_iter                : -1
+COMET INFO:     meta_scp                : meta.csv
+COMET INFO:     mixup_alpha             : 0.1
+COMET INFO:     mixup_start             : 5
+COMET INFO:     model                   : {"filts": [128, [128, 64, 64], [64, 128, 128], [128, 128, 128], 128], "first_conv": 12, "in_channels": 2, "nb_classes": 10, "nb_fc_node": 128}
+COMET INFO:     name                    : git_baseline3
+COMET INFO:     nb_classes              : 10
+COMET INFO:     nb_fc_node              : 128
+COMET INFO:     nb_proc_db              : 4
+COMET INFO:     nb_samp                 : 240000
+COMET INFO:     nesterov                : 0
+COMET INFO:     opt_mom                 : 0.9
+COMET INFO:     optimizer               : Adam
+COMET INFO:     probability             : True
+COMET INFO:     random_state            : 1
+COMET INFO:     save_dir                : exp\DNNs\
+COMET INFO:     shrinking               : True
+COMET INFO:     tol                     : 0.001
+COMET INFO:     verbose                 : False
+COMET INFO:     wav_dir                 : wave_np\
+COMET INFO:     wd                      : 0.001
+COMET INFO:   Uploads:
+COMET INFO:     environment details : 1
+COMET INFO:     filename            : 1
+COMET INFO:     git metadata        : 1
+COMET INFO:     installed packages  : 1
+COMET INFO:     model graph         : 1
+COMET INFO:     source_code         : 1 (19.97 KB)

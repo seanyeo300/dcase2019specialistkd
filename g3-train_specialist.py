@@ -190,15 +190,29 @@ class Dataset_DCASE2019_t1(data.Dataset):
 		k = self.lines[index]
 		X = np.load(self.base_dir+k+'.npy')
 		y = self.d_class_ans[k.split('-')[0]]
-
+		n_channels, n_samples = X.shape
+		if n_samples > 480000:
+			X=X[:,:480000]
+			# print(f'Truncated to{X.shape}')
+		if n_samples ==479999:
+			X=np.pad(X,((0,0),(0,1)),'constant')
+			# print(f'Padded to:{X.shape}')
+		if n_samples ==479998:
+			X=np.pad(X,((0,0),(0,2)),'constant')
+		if not X.shape == (2,480000):
+			print(f'ERROR: I messed up:{X.shape}')
 		if self.cut:
 			nb_samp = X.shape[1]
-			start_idx = np.random.randint(low = 0, high = nb_samp - self.nb_samp)
-			X = X[:, start_idx:start_idx+self.nb_samp]
-		else: X = X[:, :479999]
+			start_idx = 0
+			# start_idx = np.random.randint(low = 0, high = nb_samp - self.nb_samp)
+			X=X[:,:480000]
+			# X = X[:, start_idx:start_idx+self.nb_samp]
+		# else: X = X[:, :479999]
+		else: X = X[:, :480000]
 		X *= 32000
 		return X, y
 
+#Defines the data files to be used for training specialists
 def get_specialist_lines(lines, d_class_ans, target_labels = None):
 	l_classwise = []
 	l_return = []
@@ -266,9 +280,9 @@ if __name__ == '__main__':
 	_abspath = os.path.abspath(__file__)
 	dir_yaml = os.path.splitext(_abspath)[0] + '.yaml'
 	with open(dir_yaml, 'r') as f_yaml:
-		parser = yaml.load(f_yaml)
-	experiment = Experiment(api_key="9CueLwB3ujfFlhdD9Z2VpKKaq",
-		project_name="torch_dcase2019", workspace="jungjee",
+		parser = yaml.load(f_yaml, Loader=yaml.FullLoader)
+	experiment = Experiment(api_key="X8sW8l8RL3gPZt0ZKyGz7Swek",
+		project_name="specialist-kd", workspace="seanyeo300",
 		auto_output_logging = 'simple',
 		disabled = bool(parser['comet_disable']))
 	if bool(parser['comet_disable']): parser['name'] = 'test'
@@ -384,6 +398,7 @@ if __name__ == '__main__':
 	#train/val################################
 	##########################################
 	best_acc = 0.
+	#Opens file for appending
 	f_acc = open(save_dir + 'accs.txt', 'a', buffering = 1)
 	for epoch in tqdm(range(parser['epoch'])):
 		np.random.shuffle(trn_lines_else)
@@ -423,7 +438,7 @@ if __name__ == '__main__':
 				optimizer.step()
 				pbar.set_description('epoch: %d loss: %.3f'%(epoch, loss))
 				pbar.update(1)
-		experiment.log_metric('trn_loss', loss)
+		experiment.log_metric('trn_loss', loss, step=epoch)
 		lr_scheduler.step()
 
 		#validation phase
@@ -493,13 +508,13 @@ if __name__ == '__main__':
 			f_acc.write('%d %f %f\n'%(epoch, float(acc[0]), float(acc[1])))
 	
 			max_acc = max(acc[0], acc[1])
-			experiment.log_metric('val_acc_rbf', acc[0])
-			experiment.log_metric('val_acc_sig', acc[1])
+			experiment.log_metric('val_acc_rbf', acc[0],step=epoch)
+			experiment.log_metric('val_acc_sig', acc[1],step=epoch)
 			#record best validation model
 			if max_acc > best_acc:
 				print('New best acc: %f'%float(max_acc))
 				best_acc = float(max_acc)
-				experiment.log_metric('best_val_acc', best_acc)
+				experiment.log_metric('best_val_acc', best_acc,step=epoch)
 				
 				#save best model
 				if acc[0] > acc[1]:

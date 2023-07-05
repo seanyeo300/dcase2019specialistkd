@@ -231,12 +231,25 @@ class Dataset_DCASE2019_t1(data.Dataset):
 		k = self.lines[index]
 		X = np.load(self.base_dir+k+'.npy')
 		y = self.d_class_ans[k.split('-')[0]]
-
+		n_channels, n_samples = X.shape
+		if n_samples > 480000:
+			X=X[:,:480000]
+			# print(f'Truncated to{X.shape}')
+		if n_samples ==479999:
+			X=np.pad(X,((0,0),(0,1)),'constant')
+			# print(f'Padded to:{X.shape}')
+		if n_samples ==479998:
+			X=np.pad(X,((0,0),(0,2)),'constant')
+		if not X.shape == (2,480000):
+			print(f'ERROR: I messed up:{X.shape}')
 		if self.cut:
 			nb_samp = X.shape[1]
-			start_idx = np.random.randint(low = 0, high = nb_samp - self.nb_samp)
-			X = X[:, start_idx:start_idx+self.nb_samp]
-		else: X = X[:, :479999]
+			start_idx = 0
+			# start_idx = np.random.randint(low = 0, high = nb_samp - self.nb_samp)
+			X=X[:,:480000]
+			# X = X[:, start_idx:start_idx+self.nb_samp]
+		# else: X = X[:, :479999]
+		else: X = X[:, :480000]
 		X *= 32000
 		return X, y
 
@@ -248,7 +261,8 @@ def split_dcase2019_fold(fold_scp, lines):
 	fold_list = []
 	for line in fold_lines[1:]:
 		fold_list.append(line.strip().split('\t')[0].split('/')[1].split('.')[0])
-		
+	
+	# for line  in fold1_train.csv, append to dev line, else append to val line
 	for line in lines:
 		if line in fold_list:
 			dev_lines.append(line)
@@ -262,7 +276,7 @@ if __name__ == '__main__':
 	_abspath = os.path.abspath(__file__)
 	dir_yaml = os.path.splitext(_abspath)[0] + '.yaml'
 	with open(dir_yaml, 'r') as f_yaml:
-		parser = yaml.load(f_yaml)
+		parser = yaml.load(f_yaml, Loader=yaml.FullLoader)
 
 	#device setting
 	cuda = torch.cuda.is_available()
@@ -305,6 +319,7 @@ if __name__ == '__main__':
 		with tqdm(total = len(devset_gen), ncols = 70) as pbar:
 			for m_batch, m_label in devset_gen:
 				m_batch = m_batch.to(device)
+				# code,_ = x,y from the return of model(m_batch) Seems to be a torch datatype
 				code, _ = model(m_batch)
 				m_label = list(m_label.numpy())
 				embeddings_dev.extend(list(code.cpu().numpy())) #>>> (16, 64?)
@@ -313,13 +328,18 @@ if __name__ == '__main__':
 				pbar.set_description('extracting embeddings..')
 		embeddings_dev = np.asarray(embeddings_dev, dtype = np.float32)
 		print(embeddings_dev.shape)
+	#Predict using SVM on embeddings
 	score_list = SVM.predict(embeddings_dev)
 	print(score_list.shape)
+	#print confusion matrix
 	conf_mat = confusion_matrix(y_true = data_y_dev, y_pred = score_list)
-	print(conf_mat)
+	print(f'Confusiong Matrix1 =\n{conf_mat}')
 
+	#creates a clone of confusion matrix
 	conf_mat2 = deepcopy(conf_mat)
+	# The operation conf_mat2 += conf_mat.T is used to make the confusion matrix symmetric. The transpose of a matrix is obtained by interchanging its rows and columns. By adding the transpose of a matrix to itself, we get a symmetric matrix. A symmetric matrix has the same values on either side of its diagonal. This operation is useful in machine learning because it helps us to identify the misclassification rate of our model. It also helps us to identify which classes are being confused with each other
 	conf_mat2 += conf_mat.T
+	print(f'Confusiong Matrix2 =\n{conf_mat2}')
 	rank_dic = {}
 	rank_dic_str = {}
 	idx = 0
@@ -329,17 +349,17 @@ if __name__ == '__main__':
 			rank_dic[conf_mat2[i][j]] = '%d-%d'%(i, j)
 			rank_dic_str[conf_mat2[i][j]] = '%s-%s'%(l_class_ans[i], l_class_ans[j])
 			idx += 1
-			print(idx)
-
+			print(f'index = {idx}')
+	#sorts the confusing pairs from highest to lowest
 	rank = sorted(rank_dic.keys(), reverse = True)
 	rank_classes = []
 	rank_classes_str = []
 	for c in rank:
 		rank_classes.append(rank_dic[c])
 		rank_classes_str.append(rank_dic_str[c])
-	print(rank_classes)
-	print(rank_classes_str)
-	print(l_class_ans)
+	print(f'rank_classes = {rank_classes}')
+	print(f'rank_classes_str = {rank_classes_str}')
+	print(f'l_class_ans = {l_class_ans}')
 	pk.dump({'rank_classes': rank_classes,
 		'rank_classes_str': rank_classes_str,
 		'conf_mat': conf_mat}, open(parser['save_dir'], 'wb'))

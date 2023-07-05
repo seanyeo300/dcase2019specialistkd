@@ -1,0 +1,65 @@
+Data:
+COMET INFO:     display_summary_level : 1
+COMET INFO:     url                   : https://www.comet.com/seanyeo300/specialist-kd/a97c7aaeecfd43a2bf4a791f754e7104
+COMET INFO:   Metrics [count] (min, max):
+COMET INFO:     best_val_acc [22] : (0.5697027804410355, 0.7349952061361458)
+COMET INFO:     loss [3438]       : (0.03808116912841797, 2.6567139625549316)
+COMET INFO:     trn_loss [90]     : (0.08316906541585922, 2.255990743637085)
+COMET INFO:     val_acc_rbf [90]  : (0.5697027804410355, 0.7349952061361458)
+COMET INFO:     val_acc_sig [90]  : (0.46615532118887826, 0.7242569511025887)
+COMET INFO:   Others:
+COMET INFO:     Name : git_baseline1
+COMET INFO:   Parameters:
+COMET INFO:     C                       : 1.0
+COMET INFO:     DB                      : DB\TAU-urban-acoustic-scenes-2019-development\
+COMET INFO:     amsgrad                 : 1
+COMET INFO:     batch_size              : 24
+COMET INFO:     break_ties              : False
+COMET INFO:     c_loss_lr               : 0.5
+COMET INFO:     c_loss_weight           : 5e-05
+COMET INFO:     cache_size              : 200
+COMET INFO:     class_weight            : 1
+COMET INFO:     coef0                   : 0.0
+COMET INFO:     comet_disable           : 0
+COMET INFO:     decision_function_shape : ovr
+COMET INFO:     degree                  : 3
+COMET INFO:     dir_label_dic           : label_dic.pk
+COMET INFO:     epoch                   : 90
+COMET INFO:     filts                   : [128, [64, 64, 64], [128, 128, 128], [128, 128, 128], 128]
+COMET INFO:     first_conv              : 12
+COMET INFO:     fold_scp                : evaluation_setup\fold1_train.csv
+COMET INFO:     gamma                   : scale
+COMET INFO:     gpu_idx                 : [0]
+COMET INFO:     in_channels             : 2
+COMET INFO:     kernel                  : sigmoid
+COMET INFO:     lr                      : 0.0001
+COMET INFO:     make_label_dic          : 1
+COMET INFO:     max_iter                : -1
+COMET INFO:     meta_scp                : meta.csv
+COMET INFO:     mixup_alpha             : 0.1
+COMET INFO:     mixup_start             : 5
+COMET INFO:     model                   : {"filts": [128, [128, 64, 64], [64, 128, 128], [128, 128, 128], 128], "first_conv": 12, "in_channels": 2, "nb_classes": 10, "nb_fc_node": 128}
+COMET INFO:     name                    : git_baseline1
+COMET INFO:     nb_classes              : 10
+COMET INFO:     nb_fc_node              : 128
+COMET INFO:     nb_proc_db              : 4
+COMET INFO:     nb_samp                 : 479520
+COMET INFO:     nesterov                : 0
+COMET INFO:     opt_mom                 : 0.9
+COMET INFO:     optimizer               : Adam
+COMET INFO:     probability             : True
+COMET INFO:     random_state            : 1
+COMET INFO:     save_dir                : exp\DNNs\
+COMET INFO:     shrinking               : True
+COMET INFO:     tol                     : 0.001
+COMET INFO:     verbose                 : False
+COMET INFO:     wav_dir                 : wave_np\
+COMET INFO:     wd                      : 0.001
+COMET INFO:   Uploads:
+COMET INFO:     environment details : 1
+COMET INFO:     filename            : 1
+COMET INFO:     git metadata        : 1
+COMET INFO:     installed packages  : 1
+COMET INFO:     model graph         : 1
+COMET INFO:     source_code         : 1 (21.18 KB)
+COMET INFO:

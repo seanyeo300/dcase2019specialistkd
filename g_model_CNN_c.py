@@ -25,7 +25,7 @@ class Residual_block(nn.Module):
 
 		if nb_filts[0] != nb_filts[2]:
 			self.downsample = True
-			self.conv_downsample = nn.Conv1d(in_channels = nb_filts[0],	
+			self.conv_downsample = nn.Conv1d(in_channels = nb_filts[0],
 				out_channels = nb_filts[2],
 				padding = 1,
 				kernel_size = 3,

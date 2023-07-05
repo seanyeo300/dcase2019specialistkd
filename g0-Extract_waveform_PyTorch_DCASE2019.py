@@ -15,21 +15,23 @@ def extract_waveforms(l_utt):
 		fn, _ = os.path.splitext(fn) 
 		if not os.path.exists(dir_base + _dir_name):
 			os.makedirs(dir_base + _dir_name)
-		np.save(dir_base+_dir_name+fn, wav)
+		np.save(dir_base+_dir_name+fn, wav) # Kenneth: Consider adding a switch statement to not keep outputting numpy files when script is run multiple times. But pls check if this has any unintended effects with the augmentation/data processing scripts later first!
 	return 
 
 
 _nb_proc = 24
 _fs = 32000
 _trg_ext = 'wav'
-_dir_dataset = 'C:/DB/TAU-urban-acoustic-scenes-2019-development/audio/'
-_dir_name = '/wave_np/'
+_dir_dataset = 'DB\\TAU-urban-acoustic-scenes-2019-development\\audio\\'
+_dir_name = '\\wave_np\\'
 if __name__ == '__main__':
 	l_utt = []
+	print(f'NOW WALKING THROUGH {_dir_dataset}')
 	for r, ds, fs in os.walk(_dir_dataset):
 		for f in fs:
 			if os.path.splitext(f)[1] != '.'+_trg_ext: continue
-			l_utt.append('/'.join([r, f.replace('\\', '/')]))
+			l_utt.append('\\'.join([r, f.replace('/', '\\')])) # Kenneth: WINDOWS
+			# l_utt.append('/'.join([r, f.replace('\\', '/')])) # Kenneth: lINUX
 
 	nb_utt_per_proc = int(len(l_utt) / _nb_proc)
 	l_proc = []

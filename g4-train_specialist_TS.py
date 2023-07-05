@@ -193,12 +193,25 @@ class Dataset_DCASE2019_t1(data.Dataset):
 		k = self.lines[index]
 		X = np.load(self.base_dir+k+'.npy')
 		y = self.d_class_ans[k.split('-')[0]]
-
+		n_channels, n_samples = X.shape
+		if n_samples > 480000:
+			X=X[:,:480000]
+			# print(f'Truncated to{X.shape}')
+		if n_samples ==479999:
+			X=np.pad(X,((0,0),(0,1)),'constant')
+			# print(f'Padded to:{X.shape}')
+		if n_samples ==479998:
+			X=np.pad(X,((0,0),(0,2)),'constant')
+		if not X.shape == (2,480000):
+			print(f'ERROR: I messed up:{X.shape}')
 		if self.cut:
 			nb_samp = X.shape[1]
-			start_idx = np.random.randint(low = 0, high = nb_samp - self.nb_samp)
-			X = X[:, start_idx:start_idx+self.nb_samp]
-		else: X = X[:, :479999]
+			start_idx = 0
+			# start_idx = np.random.randint(low = 0, high = nb_samp - self.nb_samp)
+			X=X[:,:480000]
+			# X = X[:, start_idx:start_idx+self.nb_samp]
+		# else: X = X[:, :479999]
+		else: X = X[:, :480000]
 		X *= 32000
 		return X, y
 
@@ -224,9 +237,9 @@ if __name__ == '__main__':
 	_abspath = os.path.abspath(__file__)
 	dir_yaml = os.path.splitext(_abspath)[0] + '.yaml'
 	with open(dir_yaml, 'r') as f_yaml:
-		parser = yaml.load(f_yaml)
-	experiment = Experiment(api_key="9CueLwB3ujfFlhdD9Z2VpKKaq",
-		project_name="torch_dcase2019", workspace="jungjee",
+		parser = yaml.load(f_yaml, Loader=yaml.FullLoader)
+	experiment = Experiment(api_key="X8sW8l8RL3gPZt0ZKyGz7Swek",
+		project_name="specialist-kd", workspace="seanyeo300",
 		auto_output_logging = 'simple',
 		disabled = bool(parser['comet_disable']))
 	experiment.set_name(parser['name'])
