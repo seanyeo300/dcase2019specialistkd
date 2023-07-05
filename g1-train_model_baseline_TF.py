@@ -6,7 +6,7 @@ import pickle as pk
 import numpy as np
 import torch
 import torch.nn as nn
-
+import tensorflow as tf
 from tqdm import tqdm
 from collections import OrderedDict
 from sklearn.metrics import roc_curve
@@ -231,13 +231,7 @@ class Dataset_DCASE2019_t1(data.Dataset):
 		k = self.lines[index]
 		X = self.pre_emp_multiChannel(np.load(self.base_dir+k+'.npy'))
 		y = self.d_class_ans[k.split('-')[0]]
-		n_channels, n_samples = X.shape
-		if n_samples > 480000:
-			X=X[:,:480000]
-		if n_samples <480000:
-			X=np.pad(X,((0,0),(0,1)),'constant')
-		if not X.shape == (2,480000):
-			print(f'ERROR: I fucked up')
+
 		if self.cut:
 			nb_samp = X.shape[1]
 			start_idx = np.random.randint(low = 0, high = nb_samp - self.nb_samp)
