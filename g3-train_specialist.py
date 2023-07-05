@@ -251,6 +251,8 @@ def split_specialist_lines(lines, d_class_ans, target_labels = None):
 		l_classwise[y].append(line)
 
 	for idx in range(len(l_classwise)):
+		#target labels is the confusing pair
+		#if else statements splits into confusing pair files and others
 		if idx in target_labels:
 			l_return_trg.extend(l_classwise[idx])
 		else:
@@ -258,6 +260,7 @@ def split_specialist_lines(lines, d_class_ans, target_labels = None):
 
 	return l_return_trg, l_return_else
 
+# This split is by training (dev) lines and everything else (meta-training)
 def split_dcase2019_fold(fold_scp, lines):
 	fold_lines = open(fold_scp, 'r').readlines()
 	dev_lines = []
@@ -301,6 +304,7 @@ if __name__ == '__main__':
 	#split trnset and devset
 	trn_lines, dev_lines = split_dcase2019_fold(fold_scp = parser['DB']+parser['fold_scp'], lines = lines)
 	print(len(trn_lines), len(dev_lines))
+	#target labels is set in YAML to choose confusing pairs to train on
 	trn_lines_trg, trn_lines_else = split_specialist_lines(trn_lines, d_class_ans, parser['target_labels'])
 
 	if bool(parser['comet_disable']): #for debugging
@@ -400,7 +404,7 @@ if __name__ == '__main__':
 	best_acc = 0.
 	#Opens file for appending
 	f_acc = open(save_dir + 'accs.txt', 'a', buffering = 1)
-	for epoch in tqdm(range(parser['epoch'])):
+	for epoch in tqdm(range(parser['epoch'])): #loops over (90) epochs
 		np.random.shuffle(trn_lines_else)
 		trn_lines_else_cur = trn_lines_else[:len(trn_lines_trg)]
 		trnset_else = Dataset_DCASE2019_t1(lines = trn_lines_else_cur,
