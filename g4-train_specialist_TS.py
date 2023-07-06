@@ -306,7 +306,7 @@ if __name__ == '__main__':
 	model_s = raw_CNN_c(parser['model']).to(device)	#define distilled model
 	#Loads weights into student
 	model_s.load_state_dict(torch.load(parser['weight_dir']))
-	#inistialize Teacher array
+	#initialize Teacher array
 	l_model_t = []
 	for dir_model in parser['dir_specialists']:
 		#Appends location of Specialists to dir_model
@@ -315,7 +315,8 @@ if __name__ == '__main__':
 		l_model_t[-1].load_state_dict(torch.load(dir_model))
 		for p in l_model_t[-1].parameters():
 			#model. parameters() is used to iteratively retrieve all of the arguments and may thus be passed to an optimizer. 
-			#Although PyTorch does not have a function to determine the parameters, the number of items for each parameter category can be added
+			#Although PyTorch does not have a function to determine the parameters, the number of items for each parameter 
+			# category can be added
 			p.requires_grad = False 
 		l_model_t[-1].eval()
 
@@ -325,7 +326,7 @@ if __name__ == '__main__':
 			input_size = (parser['model']['in_channels'], parser['nb_samp']),
 			print_fn=lambda x: f_summary.write(x + '\n')) 
 
-	#set ojbective funtions
+	#set objective funtions
 	criterion_out = nn.KLDivLoss(reduction = 'batchmean')	#change to CCE with soft-labels
 	#criterion_out = nn.CrossEntropyLoss()
 	criterion_code = nn.CosineEmbeddingLoss() if parser['criterion_code'] == 'cos' else nn.MSELoss()
