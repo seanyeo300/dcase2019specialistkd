@@ -304,13 +304,18 @@ if __name__ == '__main__':
 
 	#define model
 	model_s = raw_CNN_c(parser['model']).to(device)	#define distilled model
+	#Loads weights into student
 	model_s.load_state_dict(torch.load(parser['weight_dir']))
+	#inistialize Teacher array
 	l_model_t = []
 	for dir_model in parser['dir_specialists']:
+		#Appends location of Specialists to dir_model
 		dir_model = parser['save_dir'] + dir_model
 		l_model_t.append(deepcopy(model_s).to(device))
 		l_model_t[-1].load_state_dict(torch.load(dir_model))
 		for p in l_model_t[-1].parameters():
+			#model. parameters() is used to iteratively retrieve all of the arguments and may thus be passed to an optimizer. 
+			#Although PyTorch does not have a function to determine the parameters, the number of items for each parameter category can be added
 			p.requires_grad = False 
 		l_model_t[-1].eval()
 
@@ -322,6 +327,7 @@ if __name__ == '__main__':
 
 	#set ojbective funtions
 	criterion_out = nn.KLDivLoss(reduction = 'batchmean')	#change to CCE with soft-labels
+	#criterion_out = nn.CrossEntropyLoss()
 	criterion_code = nn.CosineEmbeddingLoss() if parser['criterion_code'] == 'cos' else nn.MSELoss()
 	c_obj_fn = CenterLoss(num_classes = parser['model']['nb_classes'],
 		feat_dim = parser['model']['nb_fc_node'],
@@ -340,9 +346,9 @@ if __name__ == '__main__':
 			lr = parser['lr'],
 			weight_decay = parser['wd'],
 			amsgrad = bool(parser['amsgrad']))
-	lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer,
-		milestones = parser['lrdec_milestones'],
-		gamma = parser['lrdec'])
+	lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, 
+		milestones = parser['lrdec_milestones'], #[15, 30, 45]
+		gamma = parser['lrdec']) #0.2
 
 	##########################################
 	#train/val################################
@@ -394,19 +400,21 @@ if __name__ == '__main__':
 				output = F.log_softmax(output / parser['temp_S'], dim = 1)
 
 				loss = 0
+				# Iterates through all specialist models in teacher model array
 				for m_t in l_model_t:
+					# output of each specialist model for eachh input from m_batch
 					s_label_code, s_label_output = m_t(m_batch)	#get soft-label
-					s_label_output = F.softmax(s_label_output / parser['temp_T'], dim = 1)
+					s_label_output = F.softmax(s_label_output / parser['temp_T'], dim = 1) #soft label output modified by temperature
 
-					if bool(parser['use_code_label']):
+					if bool(parser['use_code_label']): #uses soft label - SET IN YML
 						code_loss = criterion_code(code, s_label_code, cos_label) if parser['criterion_code'] == 'cos' else criterion_code(code, s_label_code)
 						loss += code_loss
-					if bool(parser['use_out_label']):
+					if bool(parser['use_out_label']): #Uses hard label - SET IN YML
 						out_cce_loss = criterion_out(output, s_label_output)
 						loss += out_cce_loss
 
-				out_c_loss = c_obj_fn(code, m_label)
-				loss += out_c_loss * parser['c_loss_weight']		
+				out_c_loss = c_obj_fn(code, m_label) 
+				loss += out_c_loss * parser['c_loss_weight']
 				optimizer.zero_grad()
 				loss.backward()
 				for param in c_obj_fn.parameters():
