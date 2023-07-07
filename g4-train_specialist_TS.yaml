@@ -28,8 +28,8 @@ temp_S: 2
 comet_disable: 0
 nesterov: 0 #for sgd optim
 amsgrad: 1 #for adam optim
-use_code_label: 0
-use_out_label: 1
+use_code_label: 0 # 0 to disable soft label output, 1 to enable
+use_out_label: 1 # 0 to disable hard label output, 1 to enable
 make_label_dic: 0
 
 #model-related

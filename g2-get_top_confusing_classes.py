@@ -320,6 +320,7 @@ if __name__ == '__main__':
 			for m_batch, m_label in devset_gen:
 				m_batch = m_batch.to(device)
 				# code,_ = x,y from the return of model(m_batch) Seems to be a torch datatype
+				# x is embeddings, y is output of fc2
 				code, _ = model(m_batch)
 				m_label = list(m_label.numpy())
 				embeddings_dev.extend(list(code.cpu().numpy())) #>>> (16, 64?)
