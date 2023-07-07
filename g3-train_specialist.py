@@ -219,8 +219,8 @@ def get_specialist_lines(lines, d_class_ans, target_labels = None):
 	for idx in range(len(d_class_ans)):
 		l_classwise.append([])
 	for line in lines:
-		y = d_class_ans[line.split('-')[0]]	#get class integer
-		l_classwise[y].append(line)
+		y = d_class_ans[line.split('-')[0]]	#get class integer (0-9)
+		l_classwise[y].append(line) #create label vector
 	for idx in range(len(l_classwise)):
 		np.random.shuffle(l_classwise[idx])
 	
