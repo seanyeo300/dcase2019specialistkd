@@ -323,7 +323,7 @@ if __name__ == '__main__':
 		cut = True,
 		base_dir = parser['DB']+parser['wav_dir'])
 	trnset_trg_gen = data.DataLoader(trnset_trg,
-		batch_size = int(parser['batch_size']/2),
+		batch_size = int(parser['batch_size']/2), #half the batch size
 		shuffle = True,
 		num_workers = parser['nb_proc_db'],
 		drop_last = True)
@@ -426,7 +426,7 @@ if __name__ == '__main__':
 		model.train()
 		with tqdm(total = len(trnset_trg_gen), ncols = 70) as pbar:
 			#for m_batch, m_label in trnset_trg_gen:
-			#Meat of the Eqn seperating confusing pair gen and else gen
+			#Algorithm Joins the batch from confusing pair and batch for other classes
 			for trg, els in zip(trnset_trg_gen, trnset_else_gen):
 				m_batch, m_label = trg
 				m_batch2, m_label2 = els 
