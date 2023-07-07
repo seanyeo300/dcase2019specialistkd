@@ -1,0 +1,70 @@
+Confusiong Matrix1 =
+[[  0   9   0   0   2  21   0   0 438  59]
+ [  0   3   0   0   6 489   0   0   2  12]
+ [  0   0   0   0   0  11   0   0 485  48]
+ [  0   0   0   0  19  80   0   1 233 183]
+ [  0   1   0   0  21 329   0   0  65  82]
+ [  0  22   0   0   0 250   0   0 194  77]
+ [  0   6   0   0  41  24   0   0  13 410]
+ [  0   0   0   0  30 145   0   0  97 223]
+ [  0   4   0   0   1 515   0   0  13   5]
+ [  0   5   0   0   5 459   0   0  41  36]]
+Confusiong Matrix2 =
+[[  0   9   0   0   2  21   0   0 438  59]
+ [  9   6   0   0   7 511   6   0   6  17]
+ [  0   0   0   0   0  11   0   0 485  48]
+ [  0   0   0   0  19  80   0   1 233 183]
+ [  2   7   0  19  42 329  41  30  66  87]
+ [ 21 511  11  80 329 500  24 145 709 536]
+ [  0   6   0   0  41  24   0   0  13 410]
+ [  0   0   0   1  30 145   0   0  97 223]
+ [438   6 485 233  66 709  13  97  26  46]
+ [ 59  17  48 183  87 536 410 223  46  72]]
+index = 1
+index = 2
+index = 3
+index = 4
+index = 5
+index = 6
+index = 7
+index = 8
+index = 9
+index = 10
+index = 11
+index = 12
+index = 13
+index = 14
+index = 15
+index = 16
+index = 17
+index = 18
+index = 19
+index = 20
+index = 21
+index = 22
+index = 23
+index = 24
+index = 25
+index = 26
+index = 27
+index = 28
+index = 29
+index = 30
+index = 31
+index = 32
+index = 33
+index = 34
+index = 35
+index = 36
+index = 37
+index = 38
+index = 39
+index = 40
+index = 41
+index = 42
+index = 43
+index = 44
+index = 45
+rank_classes = ['5-8', '5-9', '1-5', '2-8', '0-8', '6-9', '4-5', '3-8', '7-9', '3-9', '5-7', '7-8', '4-9', '3-5', '4-8', '0-9', '2-9', '8-9', '4-6', '4-7', '5-6', '0-5', '3-4', '1-9', '6-8', '2-5', '0-1', '1-4', '1-8', '0-4', '3-7', '6-7']
+rank_classes_str = ['metro_station-metro', 'metro_station-tram', 'bus-metro_station', 'shopping_mall-metro', 'airport-metro', 'park-tram', 'street_traffic-metro_station', 'street_pedestrian-metro', 'public_square-tram', 'street_pedestrian-tram', 'metro_station-public_square', 'public_square-metro', 'street_traffic-tram', 'street_pedestrian-metro_station', 'street_traffic-metro', 'airport-tram', 'shopping_mall-tram', 'metro-tram', 'street_traffic-park', 'street_traffic-public_square', 'metro_station-park', 'airport-metro_station', 'street_pedestrian-street_traffic', 'bus-tram', 'park-metro', 'shopping_mall-metro_station', 'airport-bus', 'bus-street_traffic', 'bus-metro', 'airport-street_traffic', 'street_pedestrian-public_square', 'park-public_square']
+l_class_ans = ['airport', 'bus', 'shopping_mall', 'street_pedestrian', 'street_traffic', 'metro_station', 'park', 'public_square', 'metro', 'tram']
