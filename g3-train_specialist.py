@@ -6,6 +6,7 @@ import pickle as pk
 import numpy as np
 import torch
 import torch.nn as nn
+import sys
 
 from tqdm import tqdm
 from collections import OrderedDict
@@ -191,24 +192,25 @@ class Dataset_DCASE2019_t1(data.Dataset):
 		X = np.load(self.base_dir+k+'.npy')
 		y = self.d_class_ans[k.split('-')[0]]
 		n_channels, n_samples = X.shape
-		if n_samples > 480000:
-			X=X[:,:480000]
-			# print(f'Truncated to{X.shape}')
-		if n_samples ==479999:
-			X=np.pad(X,((0,0),(0,1)),'constant')
-			# print(f'Padded to:{X.shape}')
-		if n_samples ==479998:
-			X=np.pad(X,((0,0),(0,2)),'constant')
-		if not X.shape == (2,480000):
-			print(f'ERROR: I messed up:{X.shape}')
+		# if n_samples > 480000:
+		# 	X=X[:,:480000]
+		# 	# print(f'Truncated to{X.shape}')
+		# if n_samples ==479999:
+		# 	X=np.pad(X,((0,0),(0,1)),'constant')
+		# 	# print(f'Padded to:{X.shape}')
+		# if n_samples ==479998:
+		# 	X=np.pad(X,((0,0),(0,2)),'constant')
+		# if not X.shape == (2,480000):
+		# 	print(f'ERROR: I messed up:{X.shape}')
 		if self.cut:
 			nb_samp = X.shape[1]
-			start_idx = 0
-			# start_idx = np.random.randint(low = 0, high = nb_samp - self.nb_samp)
-			X=X[:,:480000]
-			# X = X[:, start_idx:start_idx+self.nb_samp]
+			# start_idx = 0
+			start_idx = np.random.randint(low = 0, high = nb_samp - self.nb_samp)
+			# X=X[:,:480000]
+			X = X[:, start_idx:start_idx+self.nb_samp]
 		# else: X = X[:, :479999]
-		else: X = X[:, :480000]
+		# else: X = X[:, :480000]
+		else: X = X[:, :479520]
 		X *= 32000
 		return X, y
 
@@ -225,7 +227,7 @@ def get_specialist_lines(lines, d_class_ans, target_labels = None):
 		np.random.shuffle(l_classwise[idx]) # shuffles all files in array
 	
 	classwise_lens = []
-	for c in target_labels:
+	for c in target_labels: # [5, 8]
 		classwise_lens.append(len(l_classwise[c]))
 	min_len = min(classwise_lens)
 	print(min_len, 'min_len')
@@ -247,8 +249,8 @@ def split_specialist_lines(lines, d_class_ans, target_labels = None):
 	for idx in range(len(d_class_ans)):
 		l_classwise.append([])
 	for line in lines:
-		y = d_class_ans[line.split('-')[0]]	# Get class for this filename
-		l_classwise[y].append(line) # Seperates file by class
+		y = d_class_ans[line.split('-')[0]]	#get class integer
+		l_classwise[y].append(line)
 
 	for idx in range(len(l_classwise)):
 		#target labels is the confusing pair
@@ -298,12 +300,11 @@ if __name__ == '__main__':
 	#get DB list
 	lines = get_utt_list(parser['DB']+'wave_np')
 
-	#get label dictionary
-#d_class_ans ={'airport': 0, 'bus': 1, 'shopping_mall': 2, etc...
+	#get label dictionary.
+ 	#d_class_ans ={'airport': 0, 'bus': 1, 'shopping_mall': 2, etc...
 	#l_class_ans = ['airport', 'bus', 'shopping_mall', 'street_pedestrian', etc...
 	d_class_ans, l_class_ans = pk.load(open(parser['DB']+parser['dir_label_dic'], 'rb'))
 	# sys.exit("printed stuff, stop now")
-
 	#split trnset and devset
 	trn_lines, dev_lines = split_dcase2019_fold(fold_scp = parser['DB']+parser['fold_scp'], lines = lines)
 	print(len(trn_lines), len(dev_lines))
@@ -323,7 +324,7 @@ if __name__ == '__main__':
 		cut = True,
 		base_dir = parser['DB']+parser['wav_dir'])
 	trnset_trg_gen = data.DataLoader(trnset_trg,
-		batch_size = int(parser['batch_size']/2), #half the batch size
+		batch_size = int(parser['batch_size']/2),
 		shuffle = True,
 		num_workers = parser['nb_proc_db'],
 		drop_last = True)
@@ -415,9 +416,8 @@ if __name__ == '__main__':
 			nb_samp = parser['nb_samp'],
 			cut = True,
 			base_dir = parser['DB']+parser['wav_dir'])
-		#Creates a dataloader for all classes outside the confusing pair classes
 		trnset_else_gen = data.DataLoader(trnset_else,
-			batch_size = int(parser['batch_size']/2), # Half of the mini batch
+			batch_size = int(parser['batch_size']/2),
 			shuffle = True,
 			num_workers = parser['nb_proc_db'],
 			drop_last = True)
@@ -426,7 +426,6 @@ if __name__ == '__main__':
 		model.train()
 		with tqdm(total = len(trnset_trg_gen), ncols = 70) as pbar:
 			#for m_batch, m_label in trnset_trg_gen:
-			#Algorithm Joins the batch from confusing pair and batch for other classes
 			for trg, els in zip(trnset_trg_gen, trnset_else_gen):
 				m_batch, m_label = trg
 				m_batch2, m_label2 = els 

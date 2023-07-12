@@ -1,5 +1,5 @@
 #name: git_specialist1_37
-name: git_specialist2_58
+name: git_specialist2_base_15
 #name: test
 DB: DB\TAU-urban-acoustic-scenes-2019-development\
 meta_scp: meta.csv
@@ -13,13 +13,14 @@ opt_mom: 0.9
 wd: 0.001
 epoch: 60
 batch_size: 24 #50 #24
-nb_samp: 480000
+# nb_samp: 480000
+nb_samp: 479520
 c_loss_weight: 0.00005
 c_loss_lr: 0.5
 lrdec_milestones: [20, 50]
 lrdec: 0.2
-target_labels: [5, 8] #top-2 confusing pairs grom script g2 [3, 7], [0, 2]
-#rank_classes = ['5-8', '5-9', '1-5', '2-8', '0-8', '6-9', '4-5', '3-8', '7-9', '3-9', '5-7', '7-8', '4-9', '3-5', '4-8', '0-9', '2-9', '8-9', '4-6', '4-7', '5-6', '0-5', '3-4', '1-9', '6-8', '2-5', '0-1', '1-4', '1-8', '0-4', '3-7', '6-7']
+target_labels: [1, 5] #top-2 confusing pairs from script g2
+#rank = ['5-8', '5-9', '1-5', '2-8', '0-8', '6-9', '4-5', '3-8', '7-9', '3-9',#done '5-7', '7-8', '4-9', '3-5', '4-8', '0-9', '2-9', '8-9', '4-6', '4-7', '5-6', '0-5', '3-4', '1-9', '6-8', '2-5', '0-1', '1-4', '1-8', '0-4', '3-7', '6-7']
 #rank_classes_str = ['metro_station-metro', 'metro_station-tram', 'bus-metro_station', 'shopping_mall-metro', 'airport-metro', 'park-tram', 'street_traffic-metro_station', 'street_pedestrian-metro', 'public_square-tram', 'street_pedestrian-
 dir_label_dic: label_dic.pk
 weight_dir: exp\DNNs\git_baseline_show_epochs_2\weights\best_rbf.pt

@@ -194,24 +194,25 @@ class Dataset_DCASE2019_t1(data.Dataset):
 		X = np.load(self.base_dir+k+'.npy')
 		y = self.d_class_ans[k.split('-')[0]]
 		n_channels, n_samples = X.shape
-		if n_samples > 480000:
-			X=X[:,:480000]
-			# print(f'Truncated to{X.shape}')
-		if n_samples ==479999:
-			X=np.pad(X,((0,0),(0,1)),'constant')
-			# print(f'Padded to:{X.shape}')
-		if n_samples ==479998:
-			X=np.pad(X,((0,0),(0,2)),'constant')
-		if not X.shape == (2,480000):
-			print(f'ERROR: I messed up:{X.shape}')
+		# if n_samples > 480000:
+		# 	X=X[:,:480000]
+		# 	# print(f'Truncated to{X.shape}')
+		# if n_samples ==479999:
+		# 	X=np.pad(X,((0,0),(0,1)),'constant')
+		# 	# print(f'Padded to:{X.shape}')
+		# if n_samples ==479998:
+		# 	X=np.pad(X,((0,0),(0,2)),'constant')
+		# if not X.shape == (2,480000):
+		# 	print(f'ERROR: I messed up:{X.shape}')
 		if self.cut:
 			nb_samp = X.shape[1]
-			start_idx = 0
-			# start_idx = np.random.randint(low = 0, high = nb_samp - self.nb_samp)
-			X=X[:,:480000]
-			# X = X[:, start_idx:start_idx+self.nb_samp]
+			# start_idx = 0
+			start_idx = np.random.randint(low = 0, high = nb_samp - self.nb_samp)
+			# X=X[:,:480000]
+			X = X[:, start_idx:start_idx+self.nb_samp]
 		# else: X = X[:, :479999]
-		else: X = X[:, :480000]
+		# else: X = X[:, :480000]
+		else: X = X[:, :479520]
 		X *= 32000
 		return X, y
 
@@ -304,20 +305,17 @@ if __name__ == '__main__':
 
 	#define model
 	model_s = raw_CNN_c(parser['model']).to(device)	#define distilled model
-	#Loads weights into student
-	model_s.load_state_dict(torch.load(parser['weight_dir']))
-	#inistialize Teacher array
+	model_s.load_state_dict(torch.load(parser['weight_dir'])) # Student starts with trained weights
 	l_model_t = []
 	for dir_model in parser['dir_specialists']:
-		#Appends location of Specialists to dir_model
 		dir_model = parser['save_dir'] + dir_model
-		l_model_t.append(deepcopy(model_s).to(device))
-		l_model_t[-1].load_state_dict(torch.load(dir_model))
-		for p in l_model_t[-1].parameters():
-			#model. parameters() is used to iteratively retrieve all of the arguments and may thus be passed to an optimizer. 
-			#Although PyTorch does not have a function to determine the parameters, the number of items for each parameter category can be added
+		l_model_t.append(deepcopy(model_s).to(device)) #Keeps loading models to GPU
+		l_model_t[-1].load_state_dict(torch.load(dir_model)) 
+		#load_state_dict loads the weights and biases of the layers
+		# [-1] ensures the latest model appended is selected for loading
+		for p in l_model_t[-1].parameters(): # Turns off gradient computation for all layers
 			p.requires_grad = False 
-		l_model_t[-1].eval()
+		l_model_t[-1].eval() # Turns on evaluation 'mode' BatchNorm and dropout behaves differently in train vs eval mode
 
 	#log model summary to file
 	with open(save_dir + 'summary.txt', 'w+') as f_summary:
@@ -327,7 +325,6 @@ if __name__ == '__main__':
 
 	#set ojbective funtions
 	criterion_out = nn.KLDivLoss(reduction = 'batchmean')	#change to CCE with soft-labels
-	#criterion_out = nn.CrossEntropyLoss()
 	criterion_code = nn.CosineEmbeddingLoss() if parser['criterion_code'] == 'cos' else nn.MSELoss()
 	c_obj_fn = CenterLoss(num_classes = parser['model']['nb_classes'],
 		feat_dim = parser['model']['nb_fc_node'],
@@ -346,9 +343,9 @@ if __name__ == '__main__':
 			lr = parser['lr'],
 			weight_decay = parser['wd'],
 			amsgrad = bool(parser['amsgrad']))
-	lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, 
-		milestones = parser['lrdec_milestones'], #[15, 30, 45]
-		gamma = parser['lrdec']) #0.2
+	lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer,
+		milestones = parser['lrdec_milestones'],
+		gamma = parser['lrdec'])
 
 	##########################################
 	#train/val################################
@@ -397,29 +394,29 @@ if __name__ == '__main__':
 				m_batch, m_batch_st, m_label = map(torch.autograd.Variable, [m_batch, m_batch_st, m_label])
 				
 				code, output = model_s(m_batch_st)	#student output
-				output = F.log_softmax(output / parser['temp_S'], dim = 1)
+				output = F.log_softmax(output / parser['temp_S'], dim = 1) #Output after temperature
 
 				loss = 0
-				# Iterates through all specialist models in teacher model array
-				for m_t in l_model_t:
-					# output of each specialist model for eachh input from m_batch
+				for m_t in l_model_t: #iterates through each model in the teacher array
 					s_label_code, s_label_output = m_t(m_batch)	#get soft-label
-					s_label_output = F.softmax(s_label_output / parser['temp_T'], dim = 1) #soft label output modified by temperature
-
-					if bool(parser['use_code_label']): #uses soft label - SET IN YML
-						code_loss = criterion_code(code, s_label_code, cos_label) if parser['criterion_code'] == 'cos' else criterion_code(code, s_label_code)
+					s_label_output = F.softmax(s_label_output / parser['temp_T'], dim = 1) #output after temperature
+	
+					#Depending on soft or hard label
+					if bool(parser['use_code_label']):
+						code_loss = criterion_code(code, s_label_code, cos_label) if parser['criterion_code'] == 'cos' else criterion_code(code, s_label_code) #of COSINE else MSE
 						loss += code_loss
-					if bool(parser['use_out_label']): #Uses hard label - SET IN YML
-						out_cce_loss = criterion_out(output, s_label_output)
+					if bool(parser['use_out_label']):
+						out_cce_loss = criterion_out(output, s_label_output) #KLDIVLOSS
 						loss += out_cce_loss
 
-				out_c_loss = c_obj_fn(code, m_label) 
-				loss += out_c_loss * parser['c_loss_weight']
-				optimizer.zero_grad()
-				loss.backward()
+				out_c_loss = c_obj_fn(code, m_label)
+				loss += out_c_loss * parser['c_loss_weight']		
+				optimizer.zero_grad() #prevent incorrect calculation of gradient 
+    			#See https://androidkt.com/how-loss-backward-optimizer-step-and-optimizer-zero_grad-related-in-pytorch/
+				loss.backward() #calculates partial derivative of output wrt each input variable aka gradient
 				for param in c_obj_fn.parameters():
 					param.grad.data *= (parser['c_loss_lr'] / (parser['c_loss_weight'] * parser['lr']))
-				optimizer.step()
+				optimizer.step() #standard Pytorch operations
 				pbar.set_description('epoch: %d loss: %.3f'%(epoch, loss))
 				pbar.update(1)
 		experiment.log_metric('trn_loss', loss)
@@ -441,7 +438,7 @@ if __name__ == '__main__':
 					pbar.update(1)
 			embeddings_dev = np.asarray(embeddings_dev, dtype = np.float32)
 			print(embeddings_dev.shape)
-
+			#Generates list of fc1 outputs for each batch and corresponding labels
 			embeddings_trn = []
 			data_y = []
 			with tqdm(total = len(trnset_gen), ncols = 70) as pbar:
@@ -454,23 +451,23 @@ if __name__ == '__main__':
 					pbar.set_description('epoch%d:\tExtracting TrnEmbeddings..'%(epoch))
 					pbar.update(1)
 			embeddings_trn = np.asarray(embeddings_trn, dtype = np.float32)
-			
+			# Generates list of fc1 outputs for each batch and corresponding labels
 			SVM_list = []
 			acc = []
 			classwise_acc = []
-			for cov_type in ['rbf', 'sigmoid']:
+			for cov_type in ['rbf', 'sigmoid']: #runs SVM on both rbf and sigmoid
 				score_list = []
 		
 				SVM_list.append(SVC(kernel=cov_type,
 					gamma = 'scale',
 					probability = True))
-				SVM_list[-1].fit(embeddings_trn, data_y)
+				SVM_list[-1].fit(embeddings_trn, data_y) #Use Training embeddings to fit SVM
 		
 				num_corr = 0
 				num_corr_class = [0]* len(l_class_ans)
 				num_predict_class = [0] * len(l_class_ans)
 		
-				score_list = SVM_list[-1].predict(embeddings_dev)
+				score_list = SVM_list[-1].predict(embeddings_dev) # Generate Score list using Trained SVMs
 				
 				assert len(score_list) == len(data_y_dev)
 				for i in range(embeddings_dev.shape[0]):
