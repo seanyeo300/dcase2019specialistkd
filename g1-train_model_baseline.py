@@ -367,7 +367,7 @@ if __name__ == '__main__':
 		batch_size = parser['batch_size'],
 		shuffle = True,
 		num_workers = parser['nb_proc_db'],
-		drop_last = True)
+		drop_last = True) #drops the last incomplete batch
 	devset = Dataset_DCASE2019_t1(lines = dev_lines,
 		d_class_ans = d_class_ans,
 		nb_samp = 0,
