@@ -6,9 +6,9 @@ batch_size: 25 #50 #24
 dir_label_dic: label_dic.pk
 
 #new
-weight_dir: exp\DNNs\git_baseline_show_epoch_2\weights\best_rbf.pt
-svm_dir: exp\DNNs\git_baseline_show_epoch_2\svm\best_rbf.pk
-save_dir: exp\DNNs\git_baseline_show_epoch_2\confmat.pk
+weight_dir: exp\DNNs\git_specialist2_58\weights\best_rbf.pt
+svm_dir: exp\DNNs\git_specialist2_58\svm\best_rbf.pk
+save_dir: exp\DNNs\git_specialist2_58\confmat.pk
 
 #model-related
 model:

@@ -1,0 +1,16 @@
+l_model_t is an array containing specialist modelsmodel
+
+Loop turns off gradient calculation for all models
+
+script trains student in the following way
+
+set student model.train()
+
+Phase 1:
+Student soft label is obtained
+
+Phase 2:
+Baseline and Specialists are in eval() mode.
+Each model is fed a batch and the softmax output is obtained
+
+Loss is calculated from the student output and all teacher outputs
